@@ -9,13 +9,14 @@ import (
 const (
 	SALT   = "Pcmmr]g[*Z'v"
 	DB_CON = "crm:crm@127.0.0.1:27017/crm?maxPoolSize=50"
+	//DB_CON = "crm:crm@192.168.0.191:27017/crm?maxPoolSize=50"
 )
 
 func main() {
 	print("start crm\n")
 
 	addr := flag.String("p", ":3000", "address where the server listen on")
-	war := flag.String("war", "./public", "directory of war files")
+	war := flag.String("war", "./app", "directory of war files")
 	flag.Parse()
 
 	//connect mongodb
