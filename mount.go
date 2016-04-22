@@ -81,6 +81,16 @@ func mount(session *mgo.Session, war string) {
 				r.Delete("", delOrgHandler)
 			}, midOrg)
 		})
+
+		admin.Group("/user", func(c martini.Router) {
+			c.Post("", createUserHandler)
+			c.Get("", listUserHandler)
+			c.Group(`/(?P<id>[0-9a-z]{24})`, func(r martini.Router) {
+				r.Get("", showUserHandler)
+				r.Post("", updateUserHandler)
+				r.Delete("", delUserHandler)
+			}, midUser)
+		})
 	}, midAdminMe)
 
 	m.Get("/", func() (int, string) {

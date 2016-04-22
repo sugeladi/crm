@@ -11,6 +11,7 @@ const (
 
 	C_OPERATOR = "operator"
 	C_ORG      = "org"
+	C_USER     = "user"
 	C_SEQ      = "seq"
 )
 
@@ -173,4 +174,42 @@ func prepareOrgForPortal(session *mgo.Session, org *Org) error {
 	}
 
 	return nil
+}
+
+func findUserById(ds *Ds, id string) (*User, error) {
+	var user *User
+	err := ds.se.DB(DB).C(C_USER).FindId(id).One(&user)
+	return user, err
+}
+
+func delUserById(ds *Ds, id string) error {
+	return ds.se.DB(DB).C(C_USER).RemoveId(id)
+}
+
+func addUser(ds *Ds, user *User) error {
+	return ds.se.DB(DB).C(C_USER).Insert(user)
+}
+
+func listAllUser(ds *Ds, query bson.M) ([]*User, error) {
+	l := []*User{}
+	if err := ds.se.DB(DB).C(C_USER).Find(query).All(&l); err != nil {
+		return nil, err
+	}
+
+	return l, nil
+}
+
+func findUserByQuery(ds *Ds, query bson.M, skip int, limit int) ([]*User, int, error) {
+	consulates := []*User{}
+	Q := ds.se.DB(DB).C(C_USER).Find(query).Sort("ct")
+	total, err := Q.Count()
+	if err != nil {
+		return consulates, 0, err
+	}
+
+	if err := Q.Skip(skip).Limit(limit).All(&consulates); err != nil {
+		return consulates, 0, err
+	}
+
+	return consulates, total, err
 }

@@ -29,6 +29,18 @@ type Operator struct {
 	Ex    *opEx         `json:"-"`
 }
 
+type User struct {
+	Id       string `bson:"_id" json:"id"`
+	Name     string `json:"name"`     //姓名
+	Password string `json:"password"` //密码
+	Sex      bool   `json:"sex"`      //性别
+	Address  string `json:"address"`  //地址
+	Mobile   string `json:"mobile"`   //手机号
+	Desc     string `json:"desc"`     //备注
+	Ct       int64  `json:"ct"`       //创建时间
+	Mt       int64  `json:"mt"`       //更后一次更新时间
+}
+
 type Org struct {
 	Id       int     `bson:"_id" json:"id"`
 	Parent   int     `bson:"parent" json:"parent"`
@@ -71,6 +83,10 @@ func ensureIndex(session *mgo.Session) {
 
 	idx = mgo.Index{Key: []string{"name", "parent"}, Unique: true}
 	err = session.DB(DB).C(C_ORG).EnsureIndex(idx)
+	chk(err)
+
+	idx = mgo.Index{Key: []string{"mobile"}, Unique: true}
+	err = session.DB(DB).C(C_USER).EnsureIndex(idx)
 	chk(err)
 
 	//add root worldOrg if not exist

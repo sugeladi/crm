@@ -34,5 +34,6 @@ func main() {
 	//add static file
 	mount(session, *war)
 
+	log.Printf("start web server on %s", *addr)
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }

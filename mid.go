@@ -74,3 +74,18 @@ func midOrg(param martini.Params, w http.ResponseWriter, c martini.Context, ds *
 	chk(err)
 	c.Map(org)
 }
+
+func midUser(param martini.Params, w http.ResponseWriter, c martini.Context, ds *Ds) {
+	userId := param["id"]
+	if !bson.IsObjectIdHex(userId) {
+		http.Error(w, "userId is invalid", 400)
+	}
+
+	user, err := findUserById(ds, userId)
+	if notFound(err) {
+		http.Error(w, "user not found", 404)
+		return
+	}
+	chk(err)
+	c.Map(user)
+}
