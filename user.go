@@ -9,14 +9,9 @@ import (
 )
 
 func createUserHandler(r *http.Request, web *Web, ds *Ds) (int, string) {
-	rsp := &Rsp{
-		Code: 0,
-	}
-
 	name := strings.Replace(r.PostFormValue("name"), " ", "", -1)
 	if name == "" {
-		rsp.Data = "name required"
-		return web.Json(200, rsp)
+		return 400, "name required"
 	}
 
 	address := strings.TrimSpace(r.PostFormValue("address"))
@@ -31,8 +26,7 @@ func createUserHandler(r *http.Request, web *Web, ds *Ds) (int, string) {
 	} else {
 		sex, err = strconv.ParseBool(strings.TrimSpace(isAdd))
 		if err != nil {
-			rsp.Data = "bad isAddrVerified"
-			return web.Json(200, rsp)
+			return 400, "bad isAddrVerified"
 		}
 	}
 
@@ -51,56 +45,40 @@ func createUserHandler(r *http.Request, web *Web, ds *Ds) (int, string) {
 	err = addUser(ds, user)
 	if err != nil {
 		if dup(err) {
-			rsp.Data = "已存在该手机号的用户, 请重新填写"
-			return web.Json(200, rsp)
+			return 400, "已存在该手机号的用户, 请重新填写"
 		}
 
-		rsp.Data = fmt.Sprintf("insert user error : %v", err)
-		return web.Json(200, rsp)
+		return 500, fmt.Sprintf("insert user error : %v", err)
 	}
 
-	rsp.Data = "insert user success"
-	rsp.Code = 1
-	return web.Json(200, rsp)
+	return web.Json(200, user)
 }
 
 func listUserHandler(r *http.Request, web *Web, ds *Ds) (int, string) {
-	page, err := strconv.Atoi(r.FormValue("page"))
+	page, err := parseIntParam(r, "page", 1)
 	if err != nil {
-		return 400, "bad page: " + r.FormValue("page")
+		return 400, err.Error()
 	}
 
-	size, err := strconv.Atoi(r.FormValue("size"))
+	size, err := parseIntParam(r, "size", 10)
 	if err != nil {
-		return 400, "bad size: " + r.FormValue("size")
+		return 400, err.Error()
 	}
 
 	SPEC := bson.M{}
 
-	countryId := r.FormValue("countryId")
-	if countryId != "" && bson.IsObjectIdHex(countryId) {
-		SPEC["ex.country"] = countryId
-	}
-
 	skip := (page - 1) * size
 	l, total, err := findUserByQuery(ds, SPEC, skip, size)
 	chk(err)
-	return web.Json(200, J{"users": l, "total": total, "page": page, "size": size})
+	return web.Json(200, J{"data": l, "total": total, "page": page, "size": size})
 }
 
 func delUserHandler(ds *Ds, web *Web, user *User) (int, string) {
-	rsp := &Rsp{
-		Code: 0,
-	}
-
 	if err := delUserById(ds, user.Id); err != nil {
-		rsp.Data = fmt.Sprintf("del user error : %v", err)
-		return web.Json(200, rsp)
+		return 500, "del user err"
 	}
 
-	rsp.Code = 1
-	rsp.Data = "delete user successfully"
-	return web.Json(200, rsp)
+	return 200, "ok"
 }
 
 func showUserHandler(ds *Ds, web *Web, user *User) (int, string) {
@@ -108,14 +86,9 @@ func showUserHandler(ds *Ds, web *Web, user *User) (int, string) {
 }
 
 func updateUserHandler(r *http.Request, user *User, web *Web, ds *Ds) (int, string) {
-	rsp := &Rsp{
-		Code: 0,
-	}
-
 	name := strings.Replace(r.PostFormValue("name"), " ", "", -1)
 	if name == "" {
-		rsp.Data = "name required"
-		return web.Json(200, rsp)
+		return 400, "name required"
 	}
 
 	address := strings.TrimSpace(r.PostFormValue("address"))
@@ -124,8 +97,7 @@ func updateUserHandler(r *http.Request, user *User, web *Web, ds *Ds) (int, stri
 
 	sex, err := strconv.ParseBool(strings.TrimSpace(r.PostFormValue("sex")))
 	if err != nil {
-		rsp.Data = "bad isAddrVerified"
-		return web.Json(200, rsp)
+		return 400, "bad isAddrVerified"
 	}
 
 	user.Name = name
@@ -136,9 +108,12 @@ func updateUserHandler(r *http.Request, user *User, web *Web, ds *Ds) (int, stri
 	user.Mt = tick()
 
 	err = ds.se.DB(DB).C(C_USER).UpdateId(user.Id, user)
-	chk(err)
+	if err != nil {
+		if dup(err) {
+			return 400, "已存在手机号,请重新填写!"
+		}
+		return 500, "update user err"
+	}
 
-	rsp.Code = 1
-	rsp.Data = "update user successfully"
-	return web.Json(200, rsp)
+	return web.Json(200, user)
 }
