@@ -66,6 +66,20 @@ func listUserHandler(r *http.Request, web *Web, ds *Ds) (int, string) {
 	}
 
 	SPEC := bson.M{}
+	name := strings.TrimSpace(r.FormValue("name"))
+	mobile := strings.TrimSpace(r.FormValue("mobile"))
+	address := strings.TrimSpace(r.FormValue("address"))
+	if name != "" {
+		SPEC["name"] = bson.RegEx{Pattern: name, Options: "i"}
+	}
+
+	if mobile != "" {
+		SPEC["mobile"] = bson.RegEx{Pattern: mobile, Options: "i"}
+	}
+
+	if address != "" {
+		SPEC["address"] = bson.RegEx{Pattern: address, Options: "i"}
+	}
 
 	skip := (page - 1) * size
 	l, total, err := findUserByQuery(ds, SPEC, skip, size)
