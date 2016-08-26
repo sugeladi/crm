@@ -1,0 +1,36 @@
+hash: 087331edde9b577dc7bcffca4e6e5e0908f74a9f88e71c801944c1308207c3a6
+updated: 2016-08-26T18:41:44.287238008+08:00
+imports:
+- name: github.com/boj/redistore
+  version: fc113767cd6b051980f260d6dbe84b2740c46ab0
+- name: github.com/codegangsta/inject
+  version: 33e0aa1cb7c019ccc3fbe049a8262a6403d30504
+- name: github.com/garyburd/redigo
+  version: ffa8d46ada782d81cfda81a0fbd9f45ceae448e8
+  subpackages:
+  - redis
+  - internal
+- name: github.com/go-martini/martini
+  version: c257c412d547ac70fcaf5596c1a50a7cb832c1fc
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/securecookie
+  version: c13558c2b1c44da35e0eb043053609a5ba3a1f19
+- name: github.com/gorilla/sessions
+  version: 1bbba13ba476e132b5a0739b18f1653c3e57d3c1
+- name: github.com/martini-contrib/gzip
+  version: 6c035326b43f79aa18793d2f1db512d21253ea61
+- name: github.com/martini-contrib/render
+  version: ec18f8345a1181146728238980606fb1d6f40e8c
+- name: github.com/oxtoacart/bpool
+  version: 4e1c5567d7c2dd59fa4c7c83d34c2f3528b025d6
+- name: github.com/quexer/sessions
+  version: 3bb842393c11a2d0245ba32654fb0b005405db2f
+- name: gopkg.in/mgo.v2
+  version: 3f83fa5005286a7fe593b055f0d7771a7dce4655
+  subpackages:
+  - bson
+  - internal/sasl
+  - internal/scram
+  - internal/json
+devImports: []

@@ -1,0 +1,9 @@
+package: github.com/gavinzhs/crm
+import:
+- package: github.com/go-martini/martini
+- package: github.com/martini-contrib/gzip
+- package: github.com/martini-contrib/render
+- package: github.com/quexer/sessions
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson
