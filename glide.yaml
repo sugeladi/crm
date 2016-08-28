@@ -1,6 +1,7 @@
 package: github.com/gavinzhs/crm
 import:
 - package: github.com/go-martini/martini
+  version: v1.0
 - package: github.com/martini-contrib/gzip
 - package: github.com/martini-contrib/render
 - package: github.com/quexer/sessions
